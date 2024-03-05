@@ -38,6 +38,6 @@ pip install pillow
 py main.py runserver
 ```
 
-### Open Django admin and create a default password
+### Open Django admin and create a default user and  password on users table
 
 
