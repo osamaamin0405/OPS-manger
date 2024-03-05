@@ -1,0 +1,169 @@
+{% include  "static/head.html" %}
+
+
+<div class="content-wrapper">
+  <div style="margin: 20px;"></div>
+  <section class="content">
+    <div class="container-fluid">
+      <!-- SELECT2 EXAMPLE -->
+      <div class="card card-default">
+        <div class="card-header">
+          <h3 class="card-title">Add user</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <form enctype="multipart/form-data" id="adduser" action="/adduser" method='POST'>
+                {% csrf_token %}
+
+                <!-- /.form-group -->
+                <div class="form-group">
+                  <label>User Permition</label>
+                  <select id="userpermation" name='userpermation' class="form-control select2" style="width: 100%;">
+                    {% for item in permaions %}
+                    <option value="{{ forloop.counter }}">{{ item }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="username">Name</label>
+                  <input id="username" name="username" class="form-control" type="text" placeholder="user name">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputFile">User Image</label>
+                  <div class="input-group">
+                    <div class="custom-file">
+                      <label class="custom-file-label" id="userimageLabel" for="userimage">Choose file</label>
+                      <input name='userimage' accept="image/*" type="file" class="custom-file-input" id="userimage">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="userpass">Password</label>
+                  <input name='userpass' id="userpass" class="form-control" type="password" placeholder="user password">
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-12">
+                      <button style="width: 100%" type="submit" class="btn btn-primary">Add
+                        User</button>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                      <a href='/' class="btn btn-danger" style="width: 100%" type="reset">cancel</a>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- /.col -->
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+</div>
+
+{% include  "static/footer.html" %}
+
+<!-- AdminLTE for demo purposes -->
+<script>
+  $(function () {
+
+    $("#userimage").on("change", function (e) {
+      try {
+        $("#userimageLabel").text($(this)[0].files[0].name);
+      } catch {
+        $("#userimageLabel").text("Please Chose File");
+      }
+    });
+    $('#adduser').validate({
+      rules: {
+        username: {
+          required: true,
+          minlength: 4
+        },
+        userpass: {
+          required: true,
+          minlength: 4
+        },
+        userpermation: {
+          required: true,
+
+        },
+        userimage: {
+          required: true,
+          accept: "image/*"
+        }
+
+      },
+      messages: {
+        username: {
+          required: "Please enter a User name",
+          email: "Please enter a vaild User name"
+        },
+        userpass: {
+          required: "Please provide a password",
+          minlength: "Your password must be at least 4 characters long"
+        },
+        userimage: {
+          required: "Please Input User Image",
+          accept: "This File Is No Image"
+        }
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      },
+      submitHandler: function () {
+        let form = $('#adduser');
+        form.on("submit", function (e) {
+          console.log("formSubmit")
+          e.preventDefault();
+          let formDate = new FormData(this);
+          let csfr = $("[name=csrfmiddlewaretoken]").val();
+          $.ajax({
+            url: "/adduser",
+            method: "POST",
+            contentType: false,
+            cache: false,
+            processData: false,
+            data: formDate,
+            headers: {
+              "X-CSRFToken": csfr
+            },
+            beforeSend: function (e) {
+              $(".loder").show();
+            },
+            success: function (response) {
+              $(".loder").hide();
+              if (response.error == false) {
+                if (response.redirect) {
+                  alertify.success(response.succsessText);
+                  setTimeout(() => window.location.href = response.redirect, 500);
+                } else {
+                  alertify.success(response.succsessText);
+                }
+              } else {
+                alertify.error(response.errorText)
+              }
+            }
+          });
+        })
+      }
+    });
+  });
+</script>
+
+</body>
+
+</html>

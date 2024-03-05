@@ -1,0 +1,195 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <div style="margin: 20px;"></div>
+  <section class="content">
+    <div class="container-fluid">
+      <!-- SELECT2 EXAMPLE -->
+      <div class="card card-default">
+        <div class="card-header">
+          <h3 class="card-title">Edit Sales manger</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <form method="POST" id="editcategory">
+                {% csrf_token %}
+                <input type="hidden" id='catid' name="catid" value="{{categorys.0.id}}">
+                <!-- /.form-group -->
+                {% if len > 1 %}
+                <div class="form-group">
+                  <label> إختر القسم </label>
+                  <select id="usersselctor" class="form-control select2" style="width: 100%;">
+                    {% for categ in categorys %}
+                    <option {% if forloop.first %} selected {% endif %} value="{{forloop.counter0}}">
+                      {{ categ.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                  <label> الاسم </label>
+                  <input id="catname" value="{{categorys.0.name}}" class="form-control" type="text" name="catname"
+                    placeholder="Name">
+                </div>
+                <div class="form-group">
+                  <label>كود القسم</label>
+                  <input id='catecode' name="catecode" value="{{categorys.0.catcode}}" class="form-control"
+                    type="text" placeholder="Sales Code">
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-12">
+                      <button style="width: 100%" type="submit" class="btn btn-primary">تعديل القسم</button>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                      <button id="deleteCategory" style="width: 100%" type="reset" class="btn btn-danger">حذف القسم</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- /.col -->
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+</div>
+{% include  "static/footer.html" %}
+<script>
+  let users = [];
+  "{% if len > 1 %} "
+  "{% for cate in categorys %}"
+  users.push(["{{cate.id}}", "{{cate.name}}", "{{cate.catcode}}"])
+  "{% endfor %}"
+  "{% endif %}"
+  $("#usersselctor").on("change", function () {
+    let index = $(this).val(),
+      user = users[index];
+    $("#catid").val(user[0])
+    $("#catname").val(user[1])
+    $("#catecode").val(user[2])
+  });
+</script>
+<script>
+  $(function () {
+    $('#editcategory').validate({
+      rules: {
+        catname: {
+          required: true,
+          minlength: 4
+        },
+        catecode: {
+          required: true,
+          minlength: 2
+        },
+      },
+      messages: {
+        catname: {
+          required: "من فضلك ادخل اسم القسم",
+          minlength: "هذا الاسم قصير للغاية"
+        },
+        catecode: {
+          required: "من فضلك ادخل كود القسم",
+          minlength: "كود القسم قصير للغاية"
+        },
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      },
+      submitHandler: function () {
+        let form = $('#editcategory');
+        form.on("submit", function (e) {
+          e.preventDefault();
+          let formDate = new FormData(this);
+          let csfr = $("[name=csrfmiddlewaretoken]").val();
+          alertify.confirm('Edit Sales Manegr', 'Are You Want Edit This Sales Manegr', function () {
+            $.ajax({
+              url: "/editcategory",
+              method: "POST",
+              contentType: false,
+              cache: false,
+              processData: false,
+              data: formDate,
+              headers: {
+                "X-CSRFToken": csfr
+              },
+              beforeSend: function (e) {
+                $(".loder").show();
+              },
+              success: function (response) {
+                $(".loder").hide();
+                if (response.error == false) {
+                  if (response.redirect) {
+                    alertify.success(response.succsessText);
+                    setTimeout(() => window.location.href = response.redirect, 500);
+                  } else {
+                    alertify.success(response.succsessText);
+                  }
+                } else {
+                  alertify.error(response.errorText)
+                }
+              }
+            });
+
+          }, function () {
+            alertify.error('Cancel')
+          });
+        })
+      }
+    });
+
+    $('#deleteCategory').on("click", function (e) {
+      let csfr = $("[name=csrfmiddlewaretoken]").val();
+      e.preventDefault();
+      alertify.confirm('Delet Sales Manegr', 'Are You Want Delete This Sales Manegr', function () {
+        $.ajax({
+          url: "/deletecategory",
+          method: "POST",
+          contentType: false,
+          cache: false,
+          processData: false,
+          data: new FormData($("#editcategory")[0]),
+          headers: {
+            "X-CSRFToken": csfr
+          },
+          beforeSend: function (e) {
+            $(".loder").show();
+          },
+          success: function (response) {
+            $(".loder").hide();
+            if (response.error == false) {
+              if (response.reload) {
+                alertify.success(response.succsessText);
+                setTimeout(() => window.location.reload(), 500);
+              } else {
+                alertify.success(response.succsessText);
+              }
+            } else {
+              alertify.error(response.errorText)
+            }
+          }
+        });
+
+      }, function () {
+        alertify.error('Cancel')
+      });
+    });
+  });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,446 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+
+      <!-- /.row -->
+      <div class="row">
+        <div class="col-lg-12 col-12">
+          <section class="content">
+            <div class="container-fluid">
+              <!-- SELECT2 EXAMPLE -->
+              <div class="card card-default">
+                <div class="card-header">
+                  <h3 class="card-title"> إضافة فاتورة </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label> إختار القسم </label>
+                        <div class="row">
+                          <div class="col-lg-6 col-12">
+                            <select id="usersselctor" class="form-control select2" style="width: 100%;">
+                              {% for tag in tags %}
+                              <option {% if tag.id ==  categ %} selected {% endif %} onclick="optclick()"
+                                value="{{ forloop.counter0 }}">
+                                {{ tag.name }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div class="col-lg-6 col-12">
+                            <div class="form-group">
+                              <div class="row">
+                                <div class="col-8 col-lg-8">
+                                  <input value="{{items}}" id='itemsnum' name='itemsnum' class="form-control"
+                                    type="text" placeholder="عدد العناصر">
+                                </div>
+                                <div class="col-4 col-lg-4">
+                                  <button class="btn btn-light" id='crinputs'> <i class="fas fa-plus    "></i> </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- <div class="col-lg-6 col-12">
+                              <button id="openscaner" style="width: 100%; border: 1px solid #ddd" type="button"
+                                class="btn btn-light">تشغيل الماسح</button>
+                            </div> -->
+                        </div>
+                      </div>
+                      <div id="addreceipt">
+                        {% csrf_token %}
+                        <input type="hidden" name="recid" value="{{recid}}" id='recid'>
+
+                        <input type="hidden" name="catg" value="{{categ}}" id='catg'>
+                        <!-- /.form-group -->
+                        <div class="form-table">
+                          {% for i in data %}
+                          <div class='cont'>
+                            <div class="row">
+                              <button class='delerow btn btn-danger'> <i class="fas fa-times"></i> </button>
+
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label>الإسم</label>
+                                <input id='prname-{{forloop.counter}}' name='prname-{{forloop.counter}}'
+                                  class="form-control" type="text" value="{{i.name}}" placeholder="الإسم">
+                              </div>
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label>كود المنتج</label>
+                                <input id='barcode-{{forloop.counter}}' name='barcode-{{forloop.counter}}'
+                                  class="form-control" value="{{i.barcode}}" type="text" placeholder="كود المنتج">
+                              </div>
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label> اقل كمية</label>
+                                <input value="{{i.mincount}}" name='minc-{{forloop.counter}}'
+                                  id='minc-{{forloop.counter}}' class="form-control" type="number"
+                                  placeholder="أقل كمية">
+                              </div>
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label>الكمية</label>
+                                <input value="{{i.count}}" name='count-{{forloop.counter}}'
+                                  id='count-{{forloop.counter}}' class="form-control" type="number"
+                                  placeholder="الكمية">
+                              </div>
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label>السعر</label>
+                                <input value="{{i.price}}" id='price-{{forloop.counter}}'
+                                  name='price-{{forloop.counter}}' class="form-control" type="text" placeholder="السعر">
+                                <span class='showprb'> </span>
+                              </div>
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label>نسبة الربح</label>
+                                <input value="{{i.incr}}" id='incr-{{forloop.counter}}' name='incr-{{forloop.counter}}'
+                                  class="form-control" type="text" placeholder="نسبة الربح">
+                              </div>
+                              <div class="form-group col-lg-3 col-md-6 col-12">
+                                <label>سعر البيع</label>
+                                <input value="{{i.pyprice}}" id='paypric-{{forloop.counter}}'
+                                  name='paypric-{{forloop.counter}}' class="form-control" type="text"
+                                  placeholder="سعر البيع">
+                              </div>
+                            </div>
+                            <hr>
+                          </div>
+                          {% endfor %}
+                        </div>
+                        <br>
+                        <div class="row">
+                          <div class="col-12">
+                            <button id='calcrecipt' class='btn btn-light'> إحسب إجمالي الفاتورة </button>
+                            <div style="margin: 10px;" class='totalP' id='total'>
+
+                            </div>
+                          </div>
+                        </div>
+                        <br></br>
+                        <div class="form-group">
+                          <div class="row">
+                            <div class="col-lg-4 col-12">
+                              <button id='addrecipt' style="width: 100%" type="submit" class="btn btn-primary">
+                                تعديل الفاتورة
+                              </button>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                              <button id='addandsaverec' style="width: 100%" class="btn btn-primary"> حفظ و
+                                إضافة
+                              </button>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                              <button id="deleterec" style="width: 100%" class="btn btn-danger">حذف</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.col -->
+                  </div>
+                </div>
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<!-- <div class="scaner-qr">
+  <select id="scannerselect" class="form-control select2" style="width: 50%;">
+    <option value='qr' selected="selected">QrCode</option>
+    <option value='barcode'>BarCode</option>
+  </select>
+  <div class="close">
+    <i class="fas fa-times"></i>
+  </div>
+  <video id="preview"></video>
+</div> -->
+
+{% include  "static/footer.html" %}
+<script>
+  var scanedIds = []
+
+  function updateTotalPrice() {
+    let trows = $(".form-table .row");
+    let total = 0;
+    for (let i = 0; i < trows.length; i++) {
+      let countv = $(trows[i]).children().children("input[id*=count-]")
+      let price = $(trows[i]).children().children("input[id*=price-]")
+      countv = parseFloat(countv.val()) || 1;
+      price = parseFloat(price.val()) || 0;
+      total += (price * countv)
+    }
+
+    return total
+  }
+
+  function getToal() {
+    let count = 0,
+      inputs = $("#addreceipt input[id*=price-]");
+    for (let i = 0; i < inputs.length; i++) {
+      if (isNaN(parseFloat(inputs[i].value))) {
+        continue;
+      } else {
+        count = parseFloat(count + parseFloat(inputs[i].value))
+      }
+    }
+    return count
+  }
+
+  $("#calcrecipt").on("click", function () {
+    let count = getToal()
+    $("#total").html(count.toFixed(4))
+  });
+
+
+  function createinputs(index) {
+    return ` <div class='cont'><div class="row">
+      <button class='delerow btn btn-danger'> <i class="fas fa-times"></i> </button>
+
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label>الإسم</label>
+        <input id='prname-${index}' name='prname-${index}' class="form-control" type="text"
+          placeholder="الإسم">
+      </div>
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label>كود المنتج</label>
+        <input id='barcode-${index}' name='barcode-${index}' class="form-control" type="text" placeholder="كود المنتج">
+      </div>
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label> اقل كمية</label>
+        <input value="1" name='minc-${index}' id='minc-${index}' class="form-control" type="number"
+          placeholder="أقل كمية">
+      </div>
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label>الكمية</label>
+        <input value="2" name='count-${index}' id='count-${index}' class="form-control" type="number"
+          placeholder="الكمية">
+      </div>
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label>السعر</label>
+        <input id='price-${index}' name='price-${index}' class="form-control" type="text" placeholder="السعر">
+        <span class='showprb'>  </span>
+      </div>
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label>نسبة الربح</label>
+        <input id='incr-${index}' name='incr-${index}' class="form-control" type="text" placeholder="نسبة الربح">
+      </div>
+      <div class="form-group col-lg-3 col-md-6 col-12">
+        <label>سعر البيع</label>
+        <input id='paypric-${index}' name='paypric-${index}' class="form-control" type="text" placeholder="سعر البيع">
+      </div>
+      </div>
+      <hr>
+    </div>
+    `
+  }
+
+  let lastinp = 1
+  $("#crinputs").on("click", function () {
+    let itemnums = $("#itemsnum");
+    if (itemnums.val() != "") {
+      nums = lastinp == 1 ? parseInt(itemnums.val()) : parseInt(itemnums.val()) + lastinp;
+      for (let i = lastinp; i <= nums; i++) {
+        $(".form-table").append(createinputs(i))
+      }
+      lastinp = nums
+      itemnums.val("")
+    }
+  });
+
+
+  let cats = [],
+    eindex = 1;
+  "{% for prod in tags %}"
+  cats.push(["{{prod.id}}", "{{prod.name}}"]);
+  "{% endfor %}"
+  $("#usersselctor").on("change ", function () {
+    if ($(this).val() == "res") {
+      return;
+    } else {
+      let index = $(this).val(),
+        cat = cats[index];
+      $("#catg").val(cat[0])
+    }
+  });
+
+  $(".row").on("input", "input[id*=price-]", function (e) {
+    let index = $(this).attr("id").split("-");
+    index = index[index.length - 1]
+    let count = $("#count-" + index).val();
+    count = parseInt(count)
+    let pyprice = parseInt($(this).val()) / count;
+    $(this).next("span").html("سعر الجملة : " + pyprice)
+  });
+  $(".row").on("input", "input[id*=incr-]", function (e) {
+    let index = $(this).attr("id").split("-");
+    index = index[index.length - 1]
+    let count = $("#count-" + index).val();
+    count = parseInt(count)
+    let pyprice = parseInt($("#price-" + index).val()) / count;
+    let val = parseFloat($(this).val()).toFixed(2),
+      percent = (val / pyprice) * (pyprice / 100)
+    $("#paypric-" + index).val(parseFloat((pyprice * percent) + pyprice).toFixed(2))
+  });
+
+  $(".row").on("change", "input[id*=barcode-]", function (e) {
+    let val = $(this).val();
+    if (scanedIds.indexOf(val) == -1) {
+      scanedIds.push(val)
+    } else {
+      console.log(val, scanedIds)
+    }
+  });
+  $(document).on("click", ".delerow", function (e) {
+    $(this).parents(".cont").fadeOut(300, function () {
+      $(this).remove()
+    })
+  });
+</script>
+
+<script>
+  function getFormDate() {
+    let trows = $(".form-table .row");
+    data = [];
+    for (let i = 0; i < trows.length; i++) {
+
+      let name = $(trows[i]).children().children("input[id*=prname-]").val(),
+        barcode = $(trows[i]).children().children("input[id*=barcode-]").val(),
+        mincount = $(trows[i]).children().children("input[id*=minc-]").val(),
+        count = $(trows[i]).children().children("input[id*=count-]").val(),
+        price = $(trows[i]).children().children("input[id*=price-]").val(),
+        incr = $(trows[i]).children().children("input[id*=incr-]").val(),
+        pyprice = $(trows[i]).children().children("input[id*=paypric-]").val();
+
+      if (barcode.trim() != "" || barcode.trim() != '') {
+        data.push({
+          name: name,
+          count: count,
+          price: price,
+          barcode: barcode,
+          incr: incr,
+          pyprice: pyprice,
+          mincount: mincount
+        })
+      }
+    }
+    data.push(getToal())
+    data.push(data.length)
+    data.push($("#catg").val())
+    return data
+  }
+
+  $(function (e) {
+    $("#addrecipt").on("click", function (e) {
+      e.preventDefault()
+      let csfr = $("[name=csrfmiddlewaretoken]").val(),
+        formData = new FormData(),
+        fd = getFormDate();
+      formData.append("data", JSON.stringify(fd))
+      alertify.confirm("تعديل الفاتورة", "هل انت متاكد من انك تريد تعديل الفاتورة", function (e) {
+        $.ajax({
+          url: "",
+          type: "POST",
+          processData: false,
+          contentType: false,
+          cache: false,
+          headers: {
+            "X-CSRFToken": csfr,
+          },
+          data: formData,
+          beforeSend: function (e) {
+            $(".loder").show()
+          },
+          success: (ress) => {
+            $(".loder").hide()
+            console.log(ress);
+            if (ress.error == false) {
+              alertify.success(ress.succsessText)
+            } else {
+              alertify.error(ress.errorText)
+            }
+          }
+        }, function () {
+          alertify.error("cancle")
+        });
+      })
+    });
+
+
+
+    $("#addandsaverec").on("click", function (e) {
+      e.preventDefault()
+      let csfr = $("[name=csrfmiddlewaretoken]").val(),
+        formData = new FormData(),
+        fd = getFormDate();
+      formData.append("data", JSON.stringify(fd))
+      formData.append("id", $("#recid").val())
+      console.log(formData)
+      $.ajax({
+        url: "/addandsavereceipt",
+        type: "POST",
+        processData: false,
+        contentType: false,
+        cache: false,
+        headers: {
+          "X-CSRFToken": csfr,
+        },
+        data: formData,
+        beforeSend: function (e) {
+          $(".loder").show()
+        },
+        success: (ress) => {
+          $(".loder").hide()
+          console.log(ress);
+          if (ress.error == false) {
+            alertify.success(ress.succsessText)
+          } else {
+            alertify.error(ress.errorText)
+          }
+        }
+      });
+    });
+
+
+
+    $("#deleterec").on("click", function (e) {
+      e.preventDefault()
+      let csfr = $("[name=csrfmiddlewaretoken]").val(),
+        formData = new FormData();
+      formData.append("id", $("#recid").val())
+      $.ajax({
+        url: "/deleterec",
+
+        type: "POST",
+        processData: false,
+        contentType: false,
+        cache: false,
+        headers: {
+          "X-CSRFToken": csfr,
+        },
+        data: formData,
+        beforeSend: function (e) {
+          $(".loder").show()
+        },
+        success: (ress) => {
+          $(".loder").hide()
+          console.log(ress);
+          if (ress.error == false) {
+            alertify.success(ress.succsessText)
+          } else {
+            alertify.error(ress.errorText)
+          }
+        }
+      });
+    });
+
+
+  });
+</script>
+
+</body>
+
+</html>

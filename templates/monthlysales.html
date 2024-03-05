@@ -1,0 +1,80 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <!-- Content Wrapper. Contains page content -->
+
+  <!-- Main content -->
+  <section class="content-header">
+    <div class="container-fluid">
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Month Sales</h3>
+          </div>
+          <!-- /.card-header -->
+          <table id="example" class="display" style="width:100%; padding: 5px;">
+            <thead>
+              <tr>
+                <th>الوقت</th>
+                <th>رقم العملية</th>
+                <th>إسم البائع</th>
+                <th>الخصم</th>
+                <th>الإجمالي</th>
+                <th> خيارات </th>
+              </tr>
+            </thead>
+          </table>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </section>
+      <!-- /.content -->
+    </div>
+  </section>
+  {% csrf_token %}
+</div>
+{% include  "static/footer.html" %}
+
+<script>
+  let csfr = $("[name=csrfmiddlewaretoken]").val();
+  let data = []
+
+  $(document).ready(function () {
+    $('#example').DataTable({
+      "ajax": {
+        url: "/allsales",
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csfr
+        },
+
+      },
+      "columns": [{
+          "data": "date"
+        },
+        {
+          "data": "code"
+        },
+        {
+          "data": "puser"
+        },
+        {
+          "data": "discound"
+        },
+        {
+          "data": "total"
+        },
+        {
+          "data": "options"
+        },
+
+
+      ]
+    });
+  });
+</script>
+</body>
+
+</html>

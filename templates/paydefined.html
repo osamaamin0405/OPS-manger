@@ -1,0 +1,285 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <div style="margin: 20px;"></div>
+  <section class="content">
+    <div class="container-fluid">
+      <!-- SELECT2 EXAMPLE -->
+      <div class="card card-default">
+        <div class="card-header">
+          <h3 class="card-title">Pay Defined Product</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <!-- /.form-group -->
+              <form action="" method="POST" id="paydf">
+                {% csrf_token %}
+                <input type="hidden" value="{{allprod.0.id}}" name="prid" id="prid">
+                {% if len > 1%}
+                <div class="form-group">
+                  <label>Chose Product</label>
+                  <div class="row">
+                    <div class="col-lg-6 col-12">
+                      <select id="usersselctor" class="form-control select2" style="width: 100%;">
+                        {% for prod in allprod %}
+                        <option {% if forloop.first %} selected {% endif %} value="{{ forloop.counter0 }}">
+                          {{ prod.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                      <button id="openscaner" style="width: 100%; border: 1px solid #ddd" type="button"
+                        class="btn btn-light">Open Scanner</button>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                  <label>Count</label>
+                  <input value="{{allprod.0.realcount}}" class="form-control" name="count" id="count" type="number"
+                    placeholder="Count">
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-12">
+                      <button id='paydfined' style="width: 100%" type="submit" class="btn btn-primary">Pay
+                        Defined</button>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                      <a href="/" style="width: 100%" type="" class="btn btn-danger">Cancel</a>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- /.col -->
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+  <div class="scaner-qr">
+    <!-- <select id="scannerselect" class="form-control select2" style="width: 50%;">
+    <option value='qr' selected="selected">QrCode</option>
+    <option value='barcode'>BarCode</option>
+  </select> -->
+    <div class="close">
+      <i class="fas fa-times"></i>
+    </div>
+    <video id="preview"></video>
+  </div>
+</div>
+{% include  "static/footer.html" %}
+
+<script>
+  let isOpend = false,
+    scanner,
+    scantype = "barcode";
+  $("#openscaner").on("click", function () {
+    isOpend = true
+    $(".scaner-qr").show(400).css("display", "flex")
+    if (isOpend) {
+      if (scantype == "qr") {
+        $("#preview").remove();
+        $(".scaner-qr").append("<video id='preview'></video>")
+        scanner = new Instascan.Scanner({
+          video: document.getElementById('preview')
+        });
+        scanner.addListener('scan', function (content) {
+          console.log(content);
+          if (typeof parseInt(content) != NaN) {
+            $("#prodcode").val(code);
+            $(".close").click()
+          } else {
+            alertfy.error("Can't Find Proudact Code Hear")
+          }
+        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+          if (cameras.length > 0) {
+            scanner.start(cameras[0]);
+          } else {
+            $("#preview").remove()
+            $(".scaner-qr").append("<div class='scanner-err'> No Cameras Found or Accsess Denide </div>")
+          }
+        }).catch(function (e) {
+          console.error(e);
+        });
+      } else if (scantype == "barcode") {
+        $("#preview").remove();
+        $(".scaner-qr").append("<div id='preview'></div>")
+        scanner = Quagga;
+        scanner.init({
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#preview') // Or '#yourElement' (optional)
+          },
+          decoder: {
+            readers: ["ean_reader"]
+          },
+
+        }, function (ress) {
+          if (ress.codeResult) {
+            console.log(ress.codeResult.code)
+          } else {
+            console.log("barcode err");
+          }
+          console.log("Initialization finished. Ready to start");
+          Quagga.start();
+          Quagga.onProcessed(function (result) {
+            var drawingCtx = Quagga.canvas.ctx.overlay,
+              drawingCanvas = Quagga.canvas.dom.overlay;
+
+            if (result) {
+              if (result.boxes) {
+                drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")),
+                  parseInt(drawingCanvas.getAttribute("height")));
+                result.boxes.filter(function (box) {
+                  return box !== result.box;
+                }).forEach(function (box) {
+                  Quagga.ImageDebug.drawPath(box, {
+                    x: 0,
+                    y: 1
+                  }, drawingCtx, {
+                    color: "green",
+                    lineWidth: 2
+                  });
+                });
+              }
+
+              if (result.box) {
+                Quagga.ImageDebug.drawPath(result.box, {
+                  x: 0,
+                  y: 1
+                }, drawingCtx, {
+                  color: "#00F",
+                  lineWidth: 2
+                });
+              }
+
+              if (result.codeResult && result.codeResult.code) {
+                Quagga.ImageDebug.drawPath(result.line, {
+                  x: 'x',
+                  y: 'y'
+                }, drawingCtx, {
+                  color: 'red',
+                  lineWidth: 3
+                });
+              }
+            }
+          })
+          Quagga.onDetected(function (ress) {
+            let code = result.codeResult.code
+            console.log(code)
+            $("#prodcode").val(parseInt(code));
+            $(".close").click()
+          })
+        });
+      }
+    }
+  });
+  // $("#scannerselect").on("change", function () {
+  //   scantype = $(this).val();
+  //   $("#openscaner").click();
+  //   console.log(scantype, scanner)
+  // })
+  $(".close").on("click", function () {
+    scanner.stop();
+    isOpend = false;
+    $(".scaner-qr").hide(400)
+  });
+</script>
+
+<script>
+  let prods = [];
+  "{% if len > 1 %} "
+  "{% for prod in allprod %}"
+  prods.push(["{{prod.id}}", "{{prod.realcount}}", ]);
+  "{% endfor %}"
+  "{% endif %}"
+  $("#usersselctor").on("change", function () {
+    let index = $(this).val(),
+      prod = prods[index];
+    $("#prid").val(prod[0])
+    $("#count").val(prod[1])
+  });
+</script>
+
+<script>
+  $(function () {
+    $('#paydf').validate({
+      count: {
+        prname: {
+          required: true,
+        },
+
+      },
+      messages: {
+        count: {
+          required: "Please enter a Product Count",
+        },
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      },
+      submitHandler: function () {
+        let form = $('#paydf');
+        $("#paydfined").on("click", function (e) {
+          console.log("formSubmit")
+          e.preventDefault();
+          let formDate = new FormData(form[0]);
+          let csfr = $("[name=csrfmiddlewaretoken]").val();
+          notSubmited = true;
+          if (notSubmited) {
+            $.ajax({
+              url: "/paydefined",
+              method: "POST",
+              contentType: false,
+              cache: false,
+              processData: false,
+              data: formDate,
+              headers: {
+                "X-CSRFToken": csfr
+              },
+              beforeSend: function (e) {
+                notSubmited = false;
+                $(".loder").show();
+              },
+              success: function (response) {
+                $(".loder").hide();
+                notSubmited = true;
+                if (response.error == false) {
+                  if (response.reload) {
+                    alertify.success(response.succsessText);
+                    setTimeout(() => window.location.reload(), 500);
+                  } else {
+                    alertify.success(response.succsessText);
+                  }
+                } else {
+                  alertify.error(response.errorText)
+                }
+              }
+            });
+          }
+        })
+      }
+    });
+  })
+</script>
+
+
+</body>
+
+</html>

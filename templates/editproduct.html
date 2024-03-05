@@ -1,0 +1,439 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <div style="margin: 20px;"></div>
+  <section class="content">
+    <div class="container-fluid">
+      <!-- SELECT2 EXAMPLE -->
+      <div class="card card-default">
+        <div class="card-header">
+          <h3 class="card-title">Edit Product</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              {% if len > 1 %}
+              <div class="form-group">
+                <label>إختار المنتج</label>
+                <div class="row">
+                  <div class="col-lg-6 col-12">
+                    <select id="usersselctor" class="form-control select2" style="width: 100%;">
+                      {% for prod in allprod %}
+                      <option {% if forloop.first %} selected {% endif %} value="{{ forloop.counter0 }}">
+                        {{ prod.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <input class="form-control" placeholder="كود المنتج" type="text" name="scnbar" id="scnbar">
+                  </div>
+                </div>
+                {% endif %}
+                <form method="POST" action="" id="addproduct">
+                  {% csrf_token %}
+                  {% if len > 1  %}
+                  <input value="{{allprod.0.id}}" type="hidden" id="prid" name="prid">
+                  {% else %}
+                  <input value="{{allprod.id}}" type="hidden" id="prid" name="prid">
+                  {% endif%}
+                  <!-- /.form-group -->
+                  <div class="form-group">
+                    <label for="prname">الإسم</label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.name}}" id="prname" name="prname" class="form-control" type="text"
+                      placeholder="الإسم">
+                    {% else %}
+                    <input value="{{allprod.name}}" id="prname" name="prname" class="form-control" type="text"
+                      placeholder="الإسم">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="prcode">كود المنتج</label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.productCode}}" id="prcode" name="prcode" class="form-control" type="text"
+                      placeholder="كود المنتج">
+                    {% else %}
+                    <input value="{{allprod.productCode}}" id="prcode" name="prcode" class="form-control" type="text"
+                      placeholder="كود المنتج">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-lg-6 col-6">
+                        <label for="catename">إختار القسم</label>
+                        <select id="catename" name="catename" class="form-control select2" style="width: 100%;">
+                          {% for cat in categotys %}
+                          <option value="{{cat.id}}">
+                            {{ cat.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-lg-6 col-6 ">
+                        <label for="salseselctor">إختار المندوب</label>
+                        <select id="salseselctor" name="catselc" class="form-control select2" style="width: 100%;">
+                          <option value='0' selected> إختار المندوب </option>
+                          {% for sales in salsesnames %}
+                          <option {% if allprod.salesname ==  sales.id %} selected {% endif %} value="{{sales.id}}">
+                            {{ sales.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="mincount">اقل عدد</label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.minconut}}" id="mincount" name="mincount" class="form-control"
+                      type="number" placeholder="min Count">
+                    {% else  %}
+                    <input value="{{allprod.minconut}}" id="mincount" name="mincount" class="form-control" type="number"
+                      placeholder="اقل عدد">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="rcount">العدد الفعلي</label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.realcount}}" name="rcount" id="rcount" class="form-control" type="number"
+                      placeholder="العدد الفعلي">
+                    {% else  %}
+                    <input value="{{allprod.realcount}}" name="rcount" id="rcount" class="form-control" type="number"
+                      placeholder="العدد الفعلي">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="recpry"> السعر الكلي </label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.recpry}}" name="recpry" id="recpry" class="form-control" type="number"
+                      placeholder="السعر الكلي">
+                    {% else  %}
+                    <input value="{{allprod.recpry}}" name="recpry" id="recpry" class="form-control" type="number"
+                      placeholder="السعر الكلي">
+                    {% endif %}
+                    <span id="showpb"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="prbuprice">سعر الجملة</label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.bougthprice}}" id="prbuprice" name="prbuprice" class="form-control"
+                      type="text" placeholder="سعر الجملة">
+                    {% else %}
+                    <input value="{{allprod.bougthprice}}" id="prbuprice" name="prbuprice" class="form-control"
+                      type="text" placeholder="سعر الجملة">
+                    {% endif  %}
+                  </div>
+                  <div class="form-group">
+                    <label for="incra"> نسبة الربح </label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.incr}}" name="incra" id="incra" class="form-control" type="number"
+                      placeholder="نسبة الربح">
+                    {% else  %}
+                    <input value="{{allprod.incr}}" name="incra" id="incra" class="form-control" type="number"
+                      placeholder="نسبة الربح">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="prpypric">سعر البيع</label>
+                    {% if len > 1  %}
+                    <input value="{{allprod.0.payprice}}" id="prpypric" name="prpypric" class="form-control"
+                      type="number" placeholder="Pay Price">
+                    {% else  %}
+                    <input value="{{allprod.payprice}}" id="prpypric" name="prpypric" class="form-control" type="number"
+                      placeholder="سعر البيع">
+                    {% endif %}
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputFile">صورة المنتج</label>
+                    <div class="input-group">
+                      <div class="widget-user-image">
+                        <img id="userimageprev" class="elevation-2" src="/static/{{prdimg}}" alt="User Avatar">
+                      </div>
+                      <div class="custom-file">
+                        <label class="custom-file-label" id="userimageLabel" for="productimage">Choose
+                          file</label>
+                        <input name='productimage' accept="image/*" type="file" class="custom-file-input"
+                          id="productimage">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-lg-6 col-12">
+                        <button id="submitform" style="width: 100%" type="submit" class="btn btn-primary">
+                          تعديل المنتج
+                        </button>
+                      </div>
+                      <div class="col-lg-6 col-12">
+                        <button id='deletprod' style="width: 100%" class="btn btn-danger">حذف
+                          المنتج</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <!-- /.col -->
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+  </section>
+</div>
+{% include  "static/footer.html" %}
+
+<script>
+  let shoinc = $("#showpb")
+  $("#recpry").on("input", function () {
+    let bubval = $(this).val(),
+      count = $("#rcount").val(),
+      sum = parseFloat(bubval / count).toFixed(2) || 0;
+    $("#prbuprice").val(sum)
+  })
+  $("#incra").on("input", function () {
+    let incval = $(this).val(),
+      sum = parseFloat($("#prbuprice").val()).toFixed(2) || 0,
+      persent = (parseFloat(incval).toFixed(2) / sum) * (sum / 100),
+      laspercent = parseFloat((persent * sum)),
+      lastprice = parseFloat(sum) + parseFloat(laspercent)
+    $("#prpypric").val(lastprice)
+  })
+  let prods = [];
+  "{% if len > 1 %} "
+  "{% for prod in allprod %}"
+  prods.push(["{{prod.id}}", "{{prod.name}}", "{{prod.productimge}}",
+    "{{prod.salesname}}", "{{prod.catename}}", "{{prod.bougthprice}}", "{{prod.payprice}}", "{{prod.minconut}}",
+    "{{prod.realcount}}", "{{prod.productCode}}", "{{prod.recpry}}", "{{prod.incr}}"
+  ]);
+  "{% endfor %}"
+  "{% endif %}"
+  $("#usersselctor").on("change", function () {
+    let index = $(this).val(),
+      prod = prods[index];
+    $("#prid").val(prod[0])
+    $("#prname").val(prod[1])
+    $("#userimageprev").attr("src", prod[2].replace("uploads/", "/static/"))
+    $("#catename").val(prod[4])
+    $("#salseselctor").val(prod[3])
+    $("#prbuprice").val(prod[5])
+    $("#prpypric").val(prod[6])
+    $("#mincount").val(prod[7])
+    $("#rcount").val(prod[8])
+    $("#recpry").val(prod[10])
+    $("#prcode").val(prod[9])
+    $("#incra").val(prod[11])
+  });
+
+  $("#scnbar").on("change", function (e) {
+    e.preventDefault()
+    let csfr = $("[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+      "url": "/scannerProd",
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csfr
+      },
+      data: {
+        "code": $(this).val()
+      },
+      beforeSend: (e) => {
+        $(".loder").show()
+      },
+      success: (ress) => {
+        $(".loder").hide();
+        $(this).val("")
+        if (ress.error == false) {
+          let prod = ress.product;
+          $("#prid").val(prod.id)
+          $("#prname").val(prod.name)
+          $("#userimageprev").attr("src", prod.primage.replace("uploads/", "/static/"))
+          $("#catename").val(prod.category)
+          $("#salseselctor").val(prod.sales)
+          $("#prbuprice").val(prod.boughtprice)
+          $("#prpypric").val(prod.paypric)
+          $("#mincount").val(prod.mcount)
+          $("#rcount").val(prod.rcount)
+          $("#recpry").val(prod.recpry)
+          $("#prcode").val(prod.prcode)
+          $("#incra").val(prod.incr)
+        } else {
+          alertify.error(ress.errorText);
+        }
+
+        $(this).focus()
+      }
+    });
+
+  });
+</script>
+
+<script>
+  $(function () {
+
+    $("#productimage").on("change", function (e) {
+      try {
+        $("#userimageLabel").text($(this)[0].files[0].name);
+      } catch {
+        $("#userimageLabel").text("Please Chose File");
+      }
+    });
+    $('#addproduct').validate({
+      rules: {
+        prname: {
+          required: true,
+          minlength: 4
+        },
+        prodcode: {
+          required: true,
+          minlength: 4
+        },
+        prbuprice: {
+          required: true,
+          min: 1
+        },
+        prpypric: {
+          required: true,
+        },
+        mincount: {
+          required: true,
+          min: 1
+        },
+        rcount: {
+          required: true,
+        },
+        productimage: {
+          accept: "image/*"
+        }
+
+      },
+      messages: {
+        username: {
+          required: "Please enter a Product name",
+          minlength: "Your Product name must be at least 4 characters long"
+        },
+        prodcode: {
+          required: "Please provide a Product Code",
+          minlength: "Your Product Code be at least 4 characters long"
+        },
+        prbuprice: {
+          required: "Please enter a Product Bought Price",
+          min: "Bought Price Must Be More Than or equal 1 at last"
+        },
+        prpypric: {
+          required: "Please enter a Product Pay Price",
+          min: "Pay Price Must Be More Than Bought Price"
+        },
+        mincount: {
+          required: "Please enter a Product Min Count",
+          min: "Min Count Must Be More Than 1 at last"
+        },
+        rcount: {
+          required: "Please enter a Product Real Count",
+          min: "Real Count Must Be More Than Min Count"
+        },
+        productimage: {
+          accept: "This File Is No Image"
+        }
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      },
+      submitHandler: function () {
+        let form = $('#addproduct');
+        $("#submitform").on("click", function (e) {
+          console.log("formSubmit")
+          e.preventDefault();
+          let formDate = new FormData(form[0]);
+          let csfr = $("[name=csrfmiddlewaretoken]").val();
+          let qrcode = $("#gnimg img").attr("src") || ""
+          formDate.append("qrcode", qrcode)
+          notSubmited = true;
+          if (notSubmited) {
+            $.ajax({
+              url: "/editproduct",
+              method: "POST",
+              contentType: false,
+              cache: false,
+              processData: false,
+              data: formDate,
+              headers: {
+                "X-CSRFToken": csfr
+              },
+              beforeSend: function (e) {
+                notSubmited = false;
+                $(".loder").show();
+              },
+              success: function (response) {
+                $(".loder").hide();
+                notSubmited = true;
+                if (response.error == false) {
+                  if (response.redirect) {
+                    alertify.success(response.succsessText);
+                    setTimeout(() => window.location.href = response.redirect, 500);
+                  } else {
+                    alertify.success(response.succsessText);
+                  }
+                } else {
+                  alertify.error(response.errorText)
+                }
+              }
+            });
+          }
+        })
+      }
+    });
+  });
+
+  $("#deletprod").on("click", function (e) {
+    e.preventDefault();
+    alertify.confirm("حذف منتج", "هل انت متأكد من انك تريد الحذف", function () {
+      let fd = new FormData($("#addproduct")[0]);
+      let csfr = $("[name=csrfmiddlewaretoken]").val();
+      $.ajax({
+        url: "/delprod",
+        method: "POST",
+        contentType: false,
+        cache: false,
+        processData: false,
+        data: fd,
+        headers: {
+          "X-CSRFToken": csfr
+        },
+        beforeSend: function (e) {
+          notSubmited = false;
+          $(".loder").show();
+        },
+        success: function (response) {
+          $(".loder").hide();
+          notSubmited = true;
+          if (response.error == false) {
+            if (response.reload) {
+              alertify.success(response.succsessText);
+              setTimeout(() => window.location.reload(), 500);
+            } else {
+              alertify.success(response.succsessText);
+            }
+          } else {
+            alertify.error(response.errorText)
+          }
+        }
+      })
+    }, function () {
+      alertify.err("تم الإلغاء")
+    });
+  });
+</script>
+
+
+</body>
+
+</html>

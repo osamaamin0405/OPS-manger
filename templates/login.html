@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/static/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/static/css/adminlte.min.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+
+<body>
+  <div class="loder">
+    <div class="container mt-4 text-center fa-10x">
+      <div class="fa-layers">
+        <i class="fas fa-spinner" style="opacity:.5"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper" style="margin: 0;">
+    <div class="form" style="height: 100vh; display: flex; justify-content: center; align-items: center;">
+      <!-- Main content -->
+      <section class="content align-content-center" style="width: 50%;">
+        <div class="container-fluid">
+          <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+              <!-- jquery validation -->
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Login</h3>
+                </div>
+                <!-- form start -->
+                <form id="loginform" method="POST">
+                  {% csrf_token %}
+                  <div class="card-body">
+                    {% if LoginError != Null %}
+                    <div class="form-group">
+                      <div class="alert alert-danger" role="alert">
+                        <strong>{{ LoginError }}</strong>
+                      </div>
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                      <label for="inputuser">User Name</label>
+                      <input type="text" name="username" class="form-control" id="inputuser" placeholder="User Name">
+                    </div>
+                    <div class="form-group">
+                      <label for="inppass">Password</label>
+                      <input type="password" name="password" class="form-control" id="inppass" placeholder="Password">
+                    </div>
+
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                  </div>
+                </form>
+              </div>
+              <!-- /.card -->
+            </div>
+            <!--/.col (left) -->
+            <!-- right column -->
+            <div class="col-md-6">
+
+            </div>
+            <!--/.col (right) -->
+          </div>
+          <!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+    </div>
+  </div>
+  {% include  "static/footer.html" %}
+  <script>
+    $(function () {
+      $.validator.setDefaults({
+        submitHandler: function () {
+          $(".loder").show();
+          $('#loginform').submit();
+        }
+      });
+      $('#loginform').validate({
+        rules: {
+          username: {
+            required: true,
+            minlength: 4
+          },
+          password: {
+            required: true,
+            minlength: 4
+          },
+
+        },
+        messages: {
+          email: {
+            required: "Please enter a User name",
+            email: "Please enter a vaild User name"
+          },
+          password: {
+            required: "Please provide a password",
+            minlength: "Your password must be at least 4 characters long"
+          },
+          terms: "Please accept our terms"
+        },
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,529 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-lg-12 col-12">
+          <section class="content">
+            <div class="container-fluid">
+              <!-- SELECT2 EXAMPLE -->
+              <div class="card card-default">
+                <div class="card-header">
+                  <h3 class="card-title"> تعديل الفاتورة </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>إختار السلعة</label>
+                        <div class="row">
+                          <div class="col-lg-6 col-12">
+                            <select id="usersselctor" class="form-control select2" style="width: 100%;">
+                              <option value="res" , selected> إختار السلعة </option>
+                              {% for prod in allprods %}
+                              <option onclick="optclick()" value="{{ forloop.counter0 }}">
+                                {{ prod.name }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div class="col-lg-6 col-12">
+                            <div class="form-group">
+                              <input id='prcode' name='prcode' class="form-control" type="text"
+                                placeholder="كود المنتج">
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                      <form action="" method="POST" id="addpayed">
+                        {% csrf_token %}
+                        <!-- /.form-group -->
+                        <input value="{{id}}" type="hidden" name="id" id="recid">
+                        <div class="form-table">
+
+                          {% for prod in recpr %}
+
+                          <div class='cont'>
+                            <button class='delerow btn btn-danger'> <i class="fas fa-times"></i> </button>
+                            <div class="row">
+                              <div class="form-group col-lg-4 col-md-6 col-12">
+                                <input value='{{prod.id}}' type="hidden" name="prid-${index}" id="prid-${index}">
+                                <label>الإسم</label>
+                                <input id='prname-${index}' disabled name='prname-${index}' class="form-control"
+                                  type="text" value="{{prod.name}}" placeholder="الإسم">
+                              </div>
+                              <div class="form-group col-lg-4 col-md-6 col-12">
+                                <label>السعر</label>
+                                <input id='price-${index}' name='price-${index}' class="form-control" type="text"
+                                  disabled value="{{prod.price}}" placeholder="السعر">
+                              </div>
+                              <div class="form-group col-lg-4 col-md-6 col-12">
+                                <label>الكمية</label>
+                                <input name='count-${index}' id='count-${index}' class="form-control" type="number"
+                                  value="{{prod.count}}" placeholder="الكمية">
+                              </div>
+                            </div>
+
+                          </div>
+                          {% endfor %}
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 col-12">
+                          <label>إضافة خصم</label>
+                          <input value="{{discound}}" name='discound' id='discound' class="form-control" type="number"
+                            placeholder="إضافة خصم">
+                        </div>
+                        <div class="row">
+                          <div class="col-12">
+                            <div style="margin: 10px;" class='totalP' id='total'>
+                              <span>
+                                السعر الإجمالي:
+                              </span>
+                              <span id='ttp'> {{lastotal}} </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="row">
+                            <div class="col-lg-6 col-12">
+                              <button id='payprod' style="width: 100%" type="submit" class="btn btn-primary">تعديل
+                                وطباعة</button>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                              <button style="width: 100%" id="delrecipt" class="btn btn-danger">حذف الفاتورة</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /.col -->
+                  </div>
+                </div>
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% include  "static/footer.html" %}
+<script>
+  function updateTotalPrice() {
+    let trows = $(".form-table .row");
+    let total = 0;
+    for (let i = 0; i < trows.length; i++) {
+      let countv = $(trows[i]).children().children("input[id*=count-]")
+      let price = $(trows[i]).children().children("input[id*=price-]")
+      countv = parseFloat(countv.val()) || 1;
+      price = parseFloat(price.val()) || 0;
+      total += (price * countv)
+    }
+
+    return total
+  }
+
+
+
+  function createinputs(index) {
+    return `
+    <div class='cont'> 
+      <button class='delerow btn btn-danger'> <i class="fas fa-times"></i> </button>
+      <div class="row">
+      <div class="form-group col-lg-4 col-md-6 col-12">
+        <input value='0' type="hidden" name="prid-${index}" id="prid-${index}">
+        <label>الإسم</label>
+        <input id='prname-${index}' disabled name='prname-${index}' class="form-control" type="text"
+          placeholder="الإسم">
+      </div>
+      <div class="form-group col-lg-4 col-md-6 col-12">
+        <label>السعر</label>
+        <input id='price-${index}' name='price-${index}' class="form-control" type="text" disabled placeholder="السعر">
+      </div>
+      <div class="form-group col-lg-4 col-md-6 col-12">
+        <label>الكمية</label>
+        <input name='count-${index}' value='1' id='count-${index}' class="form-control" type="number" placeholder="الكمية">
+      </div>
+    </div>
+    
+    </div>`
+  }
+  let scanedIds = [],
+    deletedids = [];
+  "{% for i in  recpr%}"
+  scanedIds.push("{{i.id}}")
+  "{% endfor %}"
+  $(document).on("click", ".delerow", function (e) {
+    e.preventDefault()
+    $(this).parents(".cont").fadeOut(250, function () {
+      scanedIds.splice(0, scanedIds.indexOf($(this).children(".row").children().children("[id*=prid-]")
+        .val()))
+      deletedids.push({
+        id: $(this).children(".row").children().children("[id*=prid-]").val(),
+        count: $(this).children(".row").children().children("[id*=count-]").val()
+      })
+      $(this).remove()
+      $("#ttp").html(updateTotalPrice().toFixed(3))
+    })
+  });
+
+  let prods = [],
+    eindex = 1;
+  "{% for prod in allprods %}"
+  prods.push(["{{prod.id}}", "{{prod.name}}", "{{prod.payprice}}"]);
+  "{% endfor %}"
+  $("#usersselctor").on("change ", function () {
+    if ($(this).val() == "res") {
+      return;
+    } else {
+      let index = $(this).val(),
+        prod = prods[index];
+      if (scanedIds.indexOf(prod[0]) == -1) {
+        $(".form-table").append(createinputs(eindex))
+        setTimeout(() => {
+          scanedIds.push(prod[0])
+          $("#prid-" + eindex).val(prod[0])
+          $("#prname-" + eindex).val(prod[1])
+
+          $("#price-" + eindex).val(prod[2])
+          eindex += 1;
+          $("#ttp").html(updateTotalPrice().toFixed(3))
+        }, 50)
+      } else {
+        alertify.error("هذا المنتج تم تحديده من قبل ادخل الكمية فقط")
+      }
+    }
+  });
+
+  $("#prcode").on("change", function (e) {
+    e.preventDefault()
+    let csfr = $("[name=csrfmiddlewaretoken]").val();
+
+    $.ajax({
+      "url": "/scannerProd",
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csfr
+      },
+      data: {
+        "code": $(this).val()
+      },
+      beforeSend: (e) => {
+        $(".loder").show()
+      },
+      success: (ress) => {
+        $(".loder").hide();
+        $(this).val("")
+        if (ress.error == false) {
+          if (scanedIds.indexOf(ress.product.id) != -1) {
+            console.log(ress.product.id);
+            alertify.error("هذا المنتج تم تحديده من قبل ادخل الكمية فقط")
+          } else {
+            $(".form-table").append(createinputs(eindex))
+            setTimeout(() => {
+              $("#prid-" + eindex).val(ress.product.id)
+              $("#prname-" + eindex).val(ress.product.name)
+              $("#price-" + eindex).val(ress.product.paypric)
+              eindex += 1;
+              $("#ttp").html(updateTotalPrice().toFixed(3))
+              scanedIds.push(ress.product.id)
+            }, 250)
+          }
+        } else {
+          alertify.error(ress.errorText);
+        }
+
+        $(this).focus()
+      }
+    })
+  });
+
+  $(document).on("input", "input[id*=count-]", function (e) {
+    $("#ttp").html(updateTotalPrice().toFixed(3))
+  })
+
+  function addDisCound() {
+    let total = updateTotalPrice(),
+      val = parseFloat($(this).val()),
+      addpersent = (val / total) * (total / 100),
+      lastTotal = total - (total * addpersent);
+    return Math.round(lastTotal)
+  }
+
+  function getDiscound() {
+    let total = updateTotalPrice(),
+      val = parseFloat($("#discound").val()),
+      addpersent = (val / total) * (total / 100),
+      lastTotal = (total * addpersent);
+    return Math.round(lastTotal)
+  }
+
+
+  $("#discound").on("input", function () {
+    let dis = addDisCound.apply(this);
+    $("#ttp").html(dis)
+  });
+</script>
+
+<script>
+  function printRecipt(obj, opn, puser, discound, total) {
+    let win = window.open('about:blank', "_new");
+    win.document.open();
+    let recptemp = `
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Receipt</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          width: 300px;
+          min-height: 350px;
+          margin: 0 auto;
+          direction: rtl;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .recp-title {
+          margin: 5px;
+          font-size: 18px;
+        }
+
+        .brand-log {
+          border-radius: 50%;
+        }
+
+        .inf-tt {
+          font-weight: bold;
+          font-size: 18px;
+        }
+
+        .inf-cont {
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+          margin-top: 5px;
+        }
+
+        td,
+        th {
+          border: 1px solid #dddddd;
+          text-align: right;
+          padding: 1px;
+          font-size: 14px;
+        }
+
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+      </style>
+    </head>
+
+    <body onload="window.print()" onafterprint="window.close()">
+
+      <div class="receipt-cont">
+        <h1 style="text-align: center;" class='recp-title'>فاتورة بيع</h1>
+        <center>
+          <h4> بوتيك حكاية </h4>
+        </center>
+        <div class="receipt-inf">
+          <br>
+          <p class='info'>
+            <span class='inf-tt'>رقم العملية</span>
+            <span> : </span>
+            <span class='inf-cont'>${opn}</span>
+          </p>
+          <br>
+          <p class='info'>
+            <span class='inf-tt'>رقم البائع</span>
+            <span> : </span>
+            <span class='inf-cont'>${puser}</span>
+          </p>
+          <br>
+          <p class='info'>
+            <span class='inf-tt'>الوقت</span>
+            <span> : </span>
+            <span class='inf-cont'>${new Date()}</span>
+          </p>
+        </div>
+        <div class="table-items">
+          <table>
+            <tbody>
+              <tr>
+                <th width='70%'>إسم المنتج</th>
+                <th>س</th>
+                <th>ك</th>
+                <th>ج</th>
+              </tr>`
+
+    for (let i = 0; i < obj.length; i++) {
+      recptemp += `<tr>
+                  <th width='70%'>${obj[i].name.length <= 20 ? obj[i].name : obj[i].name.slice(0, 20) + "..."}</th>
+                  <th>${obj[i].price}</th>
+                  <th>${obj[i].count}</th>
+                  <th>${obj[i].price * obj[i].count}</th>
+                </tr>`
+    }
+
+    recptemp += `<tfoot>
+              ${ (parseInt(discound) > 0) ? ` <tr>
+                <th width='70%'>الخصم</th>
+                <th>${discound}</th>
+              </tr>` : "<br/>" }
+              <tr>
+                <th width='70%'>الاجمالي</th>
+                <th>${total - (discound || 0)}</th>
+              </tr>
+            </tfoot>
+            </tbody>
+          </table>
+        </div>
+        <div class="last-inf"></div>
+      </div>
+
+    </body>
+
+    </html>`
+
+    win.document.write(recptemp)
+    win.document.close()
+
+  }
+
+
+  function getFormDate() {
+    let trows = $("form .form-table .row");
+    let total = 0;
+    data = [];
+    for (let i = 0; i < trows.length; i++) {
+      let countv = $(trows[i]).children().children("input[id*=count-]"),
+        price = $(trows[i]).children().children("input[id*=price-]"),
+        prodid = $(trows[i]).children().children("input[id*=prid-]").val(),
+        name = $(trows[i]).children().children("input[id*=prname-]").val();
+      countv = parseFloat(countv.val()) || 1;
+      price = parseFloat(price.val()) || 0;
+      total += price * countv
+
+      if (prodid.trim() != "0" && deletedids.indexOf(prodid) == -1) {
+        data.push({
+          id: prodid,
+          name: name,
+          count: countv,
+          price: price
+        })
+      }
+    }
+    data.push(total.toFixed(3))
+    data.push(getDiscound().toFixed(3))
+    return data
+  }
+
+  $(function (e) {
+    $("#payprod").on("click", function (e) {
+      e.preventDefault()
+      let csfr = $("[name=csrfmiddlewaretoken]").val(),
+        formData = new FormData(),
+        fd = getFormDate();
+      formData.append("data", JSON.stringify(fd))
+      formData.append("deletedIds", JSON.stringify(deletedids))
+      $.ajax({
+        url: "",
+        type: "POST",
+        processData: false,
+        contentType: false,
+        cache: false,
+        headers: {
+          "X-CSRFToken": csfr,
+        },
+        data: formData,
+        beforeSend: function (e) {
+          $(".loder").show()
+        },
+        success: (ress) => {
+          $(".loder").hide()
+          console.log(ress);
+          if (ress.error == false) {
+            alertify.success(ress.succsessText)
+            if (ress.print) {
+              alertify.confirm("طباعة الفاتورة",
+                "هل تريد طباعة الفاتورة",
+                function () {
+                  printRecipt(fd.slice(0, fd.length - 2), ress.opn, ress.payeduser, fd[fd.length - 1],
+                    fd[fd.length - 2])
+                  if (ress.reload) {
+                    setTimeout(500, () => window.location.reload());
+                  }
+                },
+                function (e) {
+                  alertify.error('Cancel')
+                })
+            }
+          } else {
+            alertify.error(ress.errorText)
+          }
+        }
+      });
+    });
+
+
+    $("#delrecipt").on("click", function (e) {
+      e.preventDefault()
+      let csfr = $("[name=csrfmiddlewaretoken]").val(),
+        formData = new FormData();
+
+      formData.append("id", $("#recid").val())
+      formData.append("deletedIds", JSON.stringify(getFormDate()))
+      $.ajax({
+        url: "/delepayeded",
+        type: "POST",
+        processData: false,
+        contentType: false,
+        cache: false,
+        headers: {
+          "X-CSRFToken": csfr,
+        },
+        data: formData,
+        beforeSend: function (e) {
+          $(".loder").show()
+        },
+        success: (ress) => {
+          $(".loder").hide()
+          console.log(ress);
+          if (ress.error == false) {
+            alertify.success(ress.succsessText)
+            setTimeout(_ => window.location.reload(), 500)
+          } else {
+            alertify.error(ress.errorText)
+          }
+        }
+      });
+    });
+
+
+
+
+  });
+</script>
+
+
+</body>
+
+</html>

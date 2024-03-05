@@ -1,0 +1,82 @@
+{% include  "static/head.html" %}
+
+<div class="content-wrapper">
+  <!-- Content Wrapper. Contains page content -->
+
+  <!-- Main content -->
+  <section class="content-header">
+    <div class="container-fluid">
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">جميع الفواتير</h3>
+          </div>
+          <!-- /.card-header -->
+          <table id="example" class="display" style="width:100%; padding: 5px;">
+            <thead>
+              <tr>
+                <th> رقم الفاتورة </th>
+                <th> القسم </th>
+                <th>تاريخ الفاتور</th>
+                <th> مضيف الفاتورة </th>
+                <th>عدد العناصر</th>
+                <th>إجمالي الفاتورة</th>
+                <th>تعديل</th>
+              </tr>
+            </thead>
+          </table>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </section>
+      <!-- /.content -->
+    </div>
+  </section>
+  {% csrf_token %}
+</div>
+{% include  "static/footer.html" %}
+
+<script>
+  let csfr = $("[name=csrfmiddlewaretoken]").val();
+  let data = []
+
+  $(document).ready(function () {
+    $('#example').DataTable({
+      "ajax": {
+        url: "/allreceipts",
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csfr
+        },
+
+      },
+      "columns": [{
+          "data": "id"
+        },
+        {
+          "data": "catename"
+        },
+        {
+          "data": "date"
+        },
+        {
+          "data": "addeduser"
+        },
+        {
+          "data": "items"
+        },
+        {
+          "data": "total"
+        },
+        {
+          "data": "optin"
+        }
+      ]
+    });
+  });
+</script>
+</body>
+
+</html>

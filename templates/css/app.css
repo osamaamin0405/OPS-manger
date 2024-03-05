@@ -1,0 +1,229 @@
+.loder {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+}
+.delerow {
+  position: absolute;
+  z-index: 999;
+  right: 0;
+  top: 50%;
+  transform: translate(-50%, -10%);
+  width: 23px;
+  height: 23px;
+  padding: 0;
+}
+.cont {
+  position: relative;
+}
+
+.fa-layers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+i.fa-spinner {
+  position: absolute;
+}
+
+.scaner-qr {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%);
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.scaner-qr .close {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  cursor: pointer;
+}
+
+#preview {
+  width: 50%;
+  height: 50%;
+  background: #eee;
+}
+
+.user-panel img {
+  /* height: auto; */
+  width: 2.1rem;
+  height: 2.1rem;
+  cursor: pointer;
+}
+
+.gntdqr {
+  display: none;
+}
+
+.gntdqr img {
+  width: 38px;
+  height: 38px;
+}
+
+.widget-user-image{
+  width: 50px;
+  height: 50px;
+}
+
+.widget-user-image img{
+  width: 50px;
+  height: 50px;
+}
+
+#preview{
+  position: relative;
+}
+
+canvas.drawing,
+canvas.drawingBuffer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+#invoice-POS {
+  box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+  padding: 2mm;
+  margin: 0 auto;
+  width: 44mm;
+  background: #fff;
+}
+
+#invoice-POS ::selection {
+  background: #f31544;
+  color: #fff;
+}
+
+#invoice-POS ::moz-selection {
+  background: #f31544;
+  color: #fff;
+}
+
+#invoice-POS h1 {
+  font-size: 1.5em;
+  color: #222;
+}
+
+#invoice-POS h2 {
+  font-size: 0.9em;
+}
+
+#invoice-POS h3 {
+  font-size: 1.2em;
+  font-weight: 300;
+  line-height: 2em;
+}
+
+#invoice-POS p {
+  font-size: 0.7em;
+  color: #666;
+  line-height: 1.2em;
+}
+
+#invoice-POS #top,
+#invoice-POS #mid,
+#invoice-POS #bot {
+  /* Targets all id with 'col-' */
+  border-bottom: 1px solid #eee;
+}
+
+#invoice-POS #top {
+  min-height: 100px;
+}
+
+#invoice-POS #mid {
+  min-height: 80px;
+}
+
+#invoice-POS #bot {
+  min-height: 50px;
+}
+
+#invoice-POS #top .logo {
+  height: 60px;
+  width: 60px;
+  background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
+  background-size: 60px 60px;
+}
+
+#invoice-POS .clientlogo {
+  float: left;
+  height: 60px;
+  width: 60px;
+  background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
+  background-size: 60px 60px;
+  border-radius: 50px;
+}
+
+#invoice-POS .info {
+  display: block;
+  margin-left: 0;
+}
+
+#invoice-POS .title {
+  float: right;
+}
+
+#invoice-POS .title p {
+  text-align: right;
+}
+
+#invoice-POS table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#invoice-POS .tabletitle {
+  font-size: 0.5em;
+  background: #eee;
+}
+
+#invoice-POS .service {
+  border-bottom: 1px solid #eee;
+}
+
+#invoice-POS .item {
+  width: 24mm;
+}
+
+#invoice-POS .itemtext {
+  font-size: 0.5em;
+}
+
+#invoice-POS #legalcopy {
+  margin-top: 5mm;
+}
+
+
+.form-table {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 60vh;
+  padding: 10px;
+}
