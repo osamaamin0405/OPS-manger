@@ -5,7 +5,8 @@
 ![live preview](https://raw.githubusercontent.com/osamaamin0405/OPS-manger/master/ops%20system.png)
 
 <h4 align=center> preview video </h4>
-![video](<iframe src="https://player.vimeo.com/video/765243454?h=31099530bb" width="640" height="564" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>)
+
+[![asciicast](https://raw.githubusercontent.com/osamaamin0405/OPS-manger/master/ops%20system.png)](https://vimeo.com/765243454?share=copy)
 
 ## fetures
 
